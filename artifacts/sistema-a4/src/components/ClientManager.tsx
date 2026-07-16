@@ -75,7 +75,7 @@ export default function ClientManager({
     setForm(emptyForm);
   };
 
-  const FormBlock = ({ isEdit }: { isEdit: boolean }) => (
+  const formJSX = (isEdit: boolean) => (
     <div
       className={`bg-white border-2 rounded-2xl p-5 shadow-sm space-y-3 ${
         isEdit ? 'border-blue-300' : 'border-amber-300'
@@ -96,6 +96,7 @@ export default function ClientManager({
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           placeholder="Nome completo ou razão social"
+          autoFocus
         />
       </div>
 
@@ -188,10 +189,10 @@ export default function ClientManager({
       </div>
 
       {/* New client form */}
-      {showForm && <FormBlock isEdit={false} />}
+      {showForm && formJSX(false)}
 
       {/* Edit form */}
-      {editingClient && <FormBlock isEdit={true} />}
+      {editingClient && formJSX(true)}
 
       {/* Search */}
       <div className="relative">
