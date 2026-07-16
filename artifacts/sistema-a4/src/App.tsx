@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Product, Service, CompanySettings, DocumentData } from './types';
 import { 
   defaultCompany, 
   initialProducts, 
-  initialServices, 
-  sampleDocuments 
+  initialServices 
 } from './utils/helpers';
 import ClientManager, { SavedClient } from './components/ClientManager';
 import A4Document from './components/A4Document';
@@ -16,7 +16,6 @@ import DashboardHome from './components/DashboardHome';
 import { 
   FileText, 
   Settings, 
-  Briefcase, 
   History, 
   Layers, 
   Printer, 
@@ -26,200 +25,249 @@ import {
   LayoutGrid
 } from 'lucide-react';
 
+import {
+  useListDocuments, getListDocumentsQueryKey,
+  useCreateDocument, useUpdateDocument, useDeleteDocument,
+  useListClients, getListClientsQueryKey,
+  useCreateClient, useUpdateClient, useDeleteClient,
+  useListProducts, getListProductsQueryKey,
+  useCreateProduct, useUpdateProduct, useDeleteProduct,
+  useListServices, getListServicesQueryKey,
+  useCreateService, useUpdateService, useDeleteService,
+  useGetCompanySettings, getGetCompanySettingsQueryKey,
+  useUpdateCompanySettings
+} from '@workspace/api-client-react';
+
 type Tab = 'inicio' | 'gerar' | 'produtos' | 'clientes' | 'historico' | 'empresa';
 
-const initialClients: SavedClient[] = [
-  {
-    id: 'cli-1',
-    name: 'Carlos Alberto Silva',
-    document: '123.456.789-00',
-    phone: '(11) 99999-8888',
-    email: 'carlos.alberto@email.com',
-    address: 'Rua das Flores, 123 - Jardim Primavera, São Paulo - SP',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'cli-2',
-    name: 'Mariana Costa Oliveira',
-    document: '987.654.321-11',
-    phone: '(11) 98888-7777',
-    email: 'mariana.costa@email.com',
-    address: 'Alameda Santos, 456 - Cerqueira César, São Paulo - SP',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'cli-3',
-    name: 'Imobiliária Prime LTDA',
-    document: '22.333.444/0001-55',
-    phone: '(11) 3333-4444',
-    email: 'financeiro@primeimobiliaria.com',
-    address: 'Rua Bela Cintra, 800 - Consolação, São Paulo - SP',
-    createdAt: new Date().toISOString(),
-  },
-];
+const mapDocument = (apiDoc: any): DocumentData => ({
+  ...apiDoc,
+  dueDate: apiDoc.dueDate ?? undefined,
+  discount: apiDoc.discount ?? undefined,
+  observations: apiDoc.observations ?? undefined,
+  status: apiDoc.status ?? undefined,
+  equipment: apiDoc.equipment ?? undefined,
+  serialNumber: apiDoc.serialNumber ?? undefined,
+  defect: apiDoc.defect ?? undefined,
+  solution: apiDoc.solution ?? undefined,
+  technicalAnalysis: apiDoc.technicalAnalysis ?? undefined,
+  conclusion: apiDoc.conclusion ?? undefined,
+  responsavelTecnico: apiDoc.responsavelTecnico ?? undefined,
+  registroProfissional: apiDoc.registroProfissional ?? undefined,
+  receivedValue: apiDoc.receivedValue ?? undefined,
+  referringTo: apiDoc.referringTo ?? undefined,
+  issuerName: apiDoc.issuerName ?? undefined,
+  issuerDocument: apiDoc.issuerDocument ?? undefined,
+});
+
+const mapService = (apiServ: any): Service => ({
+  ...apiServ,
+  category: apiServ.category ?? undefined,
+});
+
+const cleanDocumentForApi = (doc: DocumentData) => {
+  const { id, ...rest } = doc;
+  return {
+    type: rest.type as any,
+    number: rest.number,
+    date: rest.date,
+    dueDate: rest.dueDate,
+    client: {
+      name: rest.client.name,
+      document: rest.client.document,
+      phone: rest.client.phone,
+      email: rest.client.email,
+      address: rest.client.address,
+    },
+    items: rest.items.map(item => ({
+      id: item.id,
+      name: item.name,
+      type: item.type as 'produto' | 'servico',
+      quantity: item.quantity,
+      price: item.price,
+      total: item.total
+    })),
+    totalAmount: rest.totalAmount,
+    discount: rest.discount,
+    observations: rest.observations,
+    status: rest.status,
+    equipment: rest.equipment,
+    serialNumber: rest.serialNumber,
+    defect: rest.defect,
+    solution: rest.solution,
+    technicalAnalysis: rest.technicalAnalysis,
+    conclusion: rest.conclusion,
+    responsavelTecnico: rest.responsavelTecnico,
+    registroProfissional: rest.registroProfissional,
+    receivedValue: rest.receivedValue,
+    referringTo: rest.referringTo,
+    issuerName: rest.issuerName,
+    issuerDocument: rest.issuerDocument,
+  };
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('inicio');
-  
-  const [products, setProducts] = useState<Product[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [documents, setDocuments] = useState<DocumentData[]>([]);
-  const [company, setCompany] = useState<CompanySettings>(defaultCompany);
-  const [clients, setClients] = useState<SavedClient[]>([]);
-
   const [previewDocument, setPreviewDocument] = useState<DocumentData | null>(null);
 
+  const queryClient = useQueryClient();
+
+  // Data Queries
+  const { data: apiProducts = [] } = useListProducts();
+  const products: Product[] = apiProducts;
+
+  const { data: apiServices = [] } = useListServices();
+  const services: Service[] = apiServices.map(mapService);
+
+  const { data: apiClients = [] } = useListClients();
+  const clients: SavedClient[] = apiClients as SavedClient[];
+
+  const { data: apiDocuments = [] } = useListDocuments();
+  const documents: DocumentData[] = apiDocuments.map(mapDocument);
+
+  const { data: apiCompany } = useGetCompanySettings();
+  const company: CompanySettings = apiCompany ? {
+    ...apiCompany,
+    website: apiCompany.website ?? undefined,
+    logoText: apiCompany.logoText ?? undefined,
+  } : defaultCompany;
+
+  // Auto-select first doc when loaded
   useEffect(() => {
-    const savedProducts = localStorage.getItem('sa4_products');
-    const savedServices = localStorage.getItem('sa4_services');
-    const savedDocs = localStorage.getItem('sa4_documents');
-    const savedCompany = localStorage.getItem('sa4_company');
-    const savedClients = localStorage.getItem('sa4_clients');
-
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    } else {
-      setProducts(initialProducts);
-      localStorage.setItem('sa4_products', JSON.stringify(initialProducts));
+    if (documents.length > 0 && !previewDocument) {
+      setPreviewDocument(documents[0]);
     }
+  }, [documents, previewDocument]);
 
-    if (savedServices) {
-      setServices(JSON.parse(savedServices));
-    } else {
-      setServices(initialServices);
-      localStorage.setItem('sa4_services', JSON.stringify(initialServices));
-    }
+  // Mutations
+  const createProduct = useCreateProduct({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() }) } });
+  const updateProduct = useUpdateProduct({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() }) } });
+  const deleteProduct = useDeleteProduct({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() }) } });
 
-    if (savedDocs) {
-      const parsedDocs = JSON.parse(savedDocs);
-      setDocuments(parsedDocs);
-      if (parsedDocs.length > 0) setPreviewDocument(parsedDocs[0]);
-    } else {
-      setDocuments(sampleDocuments);
-      localStorage.setItem('sa4_documents', JSON.stringify(sampleDocuments));
-      setPreviewDocument(sampleDocuments[0]);
-    }
+  const createService = useCreateService({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListServicesQueryKey() }) } });
+  const updateService = useUpdateService({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListServicesQueryKey() }) } });
+  const deleteService = useDeleteService({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListServicesQueryKey() }) } });
 
-    if (savedCompany) {
-      setCompany(JSON.parse(savedCompany));
-    } else {
-      setCompany(defaultCompany);
-      localStorage.setItem('sa4_company', JSON.stringify(defaultCompany));
-    }
+  const createClient = useCreateClient({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListClientsQueryKey() }) } });
+  const updateClient = useUpdateClient({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListClientsQueryKey() }) } });
+  const deleteClient = useDeleteClient({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListClientsQueryKey() }) } });
 
-    if (savedClients) {
-      setClients(JSON.parse(savedClients));
-    } else {
-      setClients(initialClients);
-      localStorage.setItem('sa4_clients', JSON.stringify(initialClients));
-    }
-  }, []);
+  const createDocument = useCreateDocument({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListDocumentsQueryKey() }) } });
+  const updateDocument = useUpdateDocument({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListDocumentsQueryKey() }) } });
+  const deleteDocument = useDeleteDocument({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getListDocumentsQueryKey() }) } });
 
-  // Products
+  const updateCompany = useUpdateCompanySettings({ mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetCompanySettingsQueryKey() }) } });
+
+  // Handlers
   const handleSaveProduct = (prod: Product) => {
-    const updated = [...products, prod];
-    setProducts(updated);
-    localStorage.setItem('sa4_products', JSON.stringify(updated));
+    createProduct.mutate({ data: { name: prod.name, description: prod.description, price: prod.price, unit: prod.unit } });
   };
   const handleEditProduct = (prod: Product) => {
-    const updated = products.map(p => p.id === prod.id ? prod : p);
-    setProducts(updated);
-    localStorage.setItem('sa4_products', JSON.stringify(updated));
+    updateProduct.mutate({ id: prod.id, data: { name: prod.name, description: prod.description, price: prod.price, unit: prod.unit } });
   };
   const handleDeleteProduct = (id: string) => {
     if (confirm('Tem certeza que deseja excluir este produto do catálogo?')) {
-      const updated = products.filter(p => p.id !== id);
-      setProducts(updated);
-      localStorage.setItem('sa4_products', JSON.stringify(updated));
+      deleteProduct.mutate({ id });
     }
   };
 
-  // Services
   const handleSaveService = (serv: Service) => {
-    const updated = [...services, serv];
-    setServices(updated);
-    localStorage.setItem('sa4_services', JSON.stringify(updated));
+    createService.mutate({ data: { name: serv.name, description: serv.description, price: serv.price, category: serv.category } });
   };
   const handleEditService = (serv: Service) => {
-    const updated = services.map(s => s.id === serv.id ? serv : s);
-    setServices(updated);
-    localStorage.setItem('sa4_services', JSON.stringify(updated));
+    updateService.mutate({ id: serv.id, data: { name: serv.name, description: serv.description, price: serv.price, category: serv.category } });
   };
   const handleDeleteService = (id: string) => {
     if (confirm('Tem certeza que deseja excluir este serviço do catálogo?')) {
-      const updated = services.filter(s => s.id !== id);
-      setServices(updated);
-      localStorage.setItem('sa4_services', JSON.stringify(updated));
+      deleteService.mutate({ id });
     }
   };
 
-  // Clients
   const handleAddClient = (c: SavedClient) => {
-    const updated = [...clients, c];
-    setClients(updated);
-    localStorage.setItem('sa4_clients', JSON.stringify(updated));
+    createClient.mutate({ data: { name: c.name, document: c.document, phone: c.phone, email: c.email, address: c.address } });
   };
   const handleEditClient = (c: SavedClient) => {
-    const updated = clients.map(x => x.id === c.id ? c : x);
-    setClients(updated);
-    localStorage.setItem('sa4_clients', JSON.stringify(updated));
+    updateClient.mutate({ id: c.id, data: { name: c.name, document: c.document, phone: c.phone, email: c.email, address: c.address } });
   };
   const handleDeleteClient = (id: string) => {
     if (confirm('Tem certeza que deseja excluir este cliente?')) {
-      const updated = clients.filter(c => c.id !== id);
-      setClients(updated);
-      localStorage.setItem('sa4_clients', JSON.stringify(updated));
+      deleteClient.mutate({ id });
     }
   };
 
-  // Company
   const handleSaveCompany = (comp: CompanySettings) => {
-    setCompany(comp);
-    localStorage.setItem('sa4_company', JSON.stringify(comp));
+    updateCompany.mutate({ data: { name: comp.name, cnpj: comp.cnpj, phone: comp.phone, email: comp.email, address: comp.address, website: comp.website, logoText: comp.logoText } });
   };
 
-  // Documents
   const handleSaveDocument = (doc: DocumentData) => {
-    const exists = documents.some(d => d.id === doc.id);
-    const updatedDocs = exists
-      ? documents.map(d => d.id === doc.id ? doc : d)
-      : [doc, ...documents];
-    setDocuments(updatedDocs);
-    localStorage.setItem('sa4_documents', JSON.stringify(updatedDocs));
-    setPreviewDocument(doc);
-    alert('Documento salvo e pronto para visualização na folha A4!');
+    const isExisting = doc.id && documents.some(d => d.id === doc.id);
+    const data = cleanDocumentForApi(doc);
+
+    if (isExisting) {
+      updateDocument.mutate({ id: doc.id, data }, {
+        onSuccess: (savedApiDoc) => {
+          setPreviewDocument(mapDocument(savedApiDoc));
+          alert('Documento salvo e pronto para visualização na folha A4!');
+        }
+      });
+    } else {
+      createDocument.mutate({ data }, {
+        onSuccess: (savedApiDoc) => {
+          setPreviewDocument(mapDocument(savedApiDoc));
+          alert('Documento salvo e pronto para visualização na folha A4!');
+        }
+      });
+    }
   };
+
   const handleDeleteDocument = (id: string) => {
     if (confirm('Tem certeza de que deseja excluir este documento do histórico?')) {
-      const updated = documents.filter(d => d.id !== id);
-      setDocuments(updated);
-      localStorage.setItem('sa4_documents', JSON.stringify(updated));
-      if (previewDocument?.id === id) setPreviewDocument(updated.length > 0 ? updated[0] : null);
+      deleteDocument.mutate({ id }, {
+        onSuccess: () => {
+          if (previewDocument?.id === id) {
+            setPreviewDocument(documents.filter(d => d.id !== id)[0] || null);
+          }
+        }
+      });
     }
   };
+
   const handleLoadDocumentForEdit = (doc: DocumentData) => {
     setPreviewDocument(doc);
     setActiveTab('gerar');
   };
+
   const handleImportBackup = (backup: DocumentData[]) => {
-    setDocuments(backup);
-    localStorage.setItem('sa4_documents', JSON.stringify(backup));
+    backup.forEach(doc => {
+      createDocument.mutate({ data: cleanDocumentForApi(doc) });
+    });
     if (backup.length > 0) setPreviewDocument(backup[0]);
   };
+
   const handleResetToDefaults = () => {
     if (confirm('Isso redefinirá todos os produtos e serviços para o catálogo de exemplo. Deseja continuar?')) {
-      setProducts(initialProducts);
-      setServices(initialServices);
-      localStorage.setItem('sa4_products', JSON.stringify(initialProducts));
-      localStorage.setItem('sa4_services', JSON.stringify(initialServices));
+      initialProducts.forEach(prod => {
+        createProduct.mutate({ data: { name: prod.name, description: prod.description, price: prod.price, unit: prod.unit } });
+      });
+      initialServices.forEach(serv => {
+        createService.mutate({ data: { name: serv.name, description: serv.description, price: serv.price, category: serv.category } });
+      });
     }
   };
+
   const handleUpdateDocumentStatus = (id: string, status: 'Pendente' | 'Em Andamento' | 'Aprovado' | 'Concluído' | 'Cancelado') => {
-    const updated = documents.map(d => d.id === id ? { ...d, status } : d);
-    setDocuments(updated);
-    localStorage.setItem('sa4_documents', JSON.stringify(updated));
-    if (previewDocument?.id === id) setPreviewDocument({ ...previewDocument, status });
+    const doc = documents.find(d => d.id === id);
+    if (doc) {
+      updateDocument.mutate({ id, data: { ...cleanDocumentForApi(doc), status } }, {
+        onSuccess: (savedApiDoc) => {
+          if (previewDocument?.id === id) {
+            setPreviewDocument(mapDocument(savedApiDoc));
+          }
+        }
+      });
+    }
   };
+
   const handleCreateNewDocument = (type: 'orcamento' | 'ordem_servico' | 'laudo_tecnico' | 'recibo') => {
     const draft: DocumentData = {
       id: '',
