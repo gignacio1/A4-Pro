@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@layer utilities {
+  @media print {
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    
+    html, body {
+      background: white !important;
+      color: black !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Ocultar todos os elementos para impressão limpa */
+    body * {
+      visibility: hidden;
+    }
+
+    /* Tornar apenas a folha A4 e seus filhos visíveis */
+    #a4-sheet, #a4-sheet * {
+      visibility: visible;
+    }
+
+    /* Posicionar a folha A4 para preencher perfeitamente a página impressa */
+    #a4-sheet {
+      position: fixed !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      margin: 0 !important;
+      padding: 15mm !important;
+      box-shadow: none !important;
+      border: none !important;
+      background: white !important;
+      color: black !important;
+      page-break-inside: avoid;
+      page-break-after: avoid;
+      page-break-before: avoid;
+      z-index: 9999999 !important;
+      transform: none !important;
+    }
+
+    /* Anular qualquer efeito de escala ou transform de divs pais */
+    div, section, main, header, footer {
+      transform: none !important;
+      -webkit-transform: none !important;
+      filter: none !important;
+      perspective: none !important;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
