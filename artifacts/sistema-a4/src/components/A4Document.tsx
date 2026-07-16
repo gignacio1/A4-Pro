@@ -565,9 +565,19 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                       <span className="text-slate-400 block text-xs">Local e Data:</span>
                       <strong className="text-slate-800 text-xs block mt-1">São Paulo - SP, {formatDate(document.date)}</strong>
                     </div>
-                    <div className="text-center">
-                      <div className="border-b border-slate-400 mx-4 h-10"></div>
-                      <span className="text-[11px] font-semibold text-slate-800 block mt-2">{document.issuerName || company.name}</span>
+                    <div className="text-center flex flex-col items-center">
+                      {company.useSignature && company.signature ? (
+                        <img
+                          src={company.signature}
+                          alt="Assinatura"
+                          className="max-h-12 max-w-[160px] object-contain mb-1"
+                          style={{ mixBlendMode: 'multiply' }}
+                        />
+                      ) : (
+                        <div className="h-10"></div>
+                      )}
+                      <div className="border-b border-slate-400 w-full mb-2"></div>
+                      <span className="text-[11px] font-semibold text-slate-800 block">{document.issuerName || company.name}</span>
                       <span className="text-[10px] text-slate-500 font-mono block mt-0.5">CNPJ: {document.issuerDocument || company.cnpj}</span>
                     </div>
                   </div>
@@ -587,12 +597,22 @@ export default function A4Document({ document, company }: A4DocumentProps) {
             {renderType !== 'recibo' && (
               <div className="border-t border-slate-200 pt-8 grid grid-cols-2 gap-12 text-center text-[11px]">
                 <div className="flex flex-col justify-end">
+                  <div className="h-14"></div>
                   <div className="border-b border-slate-300 mx-6 mb-2"></div>
                   <span className="font-semibold text-slate-800">{document.client.name}</span>
                   <span className="text-slate-400">Assinatura do Cliente</span>
                 </div>
-                <div className="flex flex-col justify-end">
-                  <div className="border-b border-slate-300 mx-6 mb-2"></div>
+                <div className="flex flex-col justify-end items-center">
+                  {company.useSignature && company.signature && (
+                    <img
+                      src={company.signature}
+                      alt="Assinatura"
+                      className="max-h-14 max-w-[180px] object-contain mb-1"
+                      style={{ mixBlendMode: 'multiply' }}
+                    />
+                  )}
+                  {!(company.useSignature && company.signature) && <div className="h-14"></div>}
+                  <div className="border-b border-slate-300 mx-6 mb-2 w-full"></div>
                   <span className="font-semibold text-slate-800">{renderType === 'laudo_tecnico' ? (document.responsavelTecnico || 'Responsável Técnico') : company.name}</span>
                   <span className="text-slate-400">{renderType === 'laudo_tecnico' ? 'Perito Responsável' : 'Responsável / Emitente'}</span>
                 </div>

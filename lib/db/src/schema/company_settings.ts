@@ -1,4 +1,4 @@
-import { pgTable, text, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -11,6 +11,8 @@ export const companySettingsTable = pgTable("company_settings", {
   address: text("address").notNull(),
   website: text("website"),
   logoText: text("logo_text"),
+  signature: text("signature"),
+  useSignature: boolean("use_signature").notNull().default(false),
 });
 
 export const insertCompanySettingsSchema = createInsertSchema(companySettingsTable).omit({ id: true });

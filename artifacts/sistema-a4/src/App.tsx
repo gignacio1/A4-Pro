@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Product, Service, CompanySettings, DocumentData } from './types';
-import { 
-  defaultCompany, 
-  initialProducts, 
-  initialServices 
-} from './utils/helpers';
+
+const defaultCompany: CompanySettings = {
+  name: '', cnpj: '', phone: '', email: '', address: '',
+  website: undefined, logoText: undefined,
+  signature: undefined, useSignature: false,
+};
 import ClientManager, { SavedClient } from './components/ClientManager';
 import A4Document from './components/A4Document';
 import ProductServiceManager from './components/ProductServiceManager';
@@ -127,9 +128,15 @@ export default function App() {
 
   const { data: apiCompany } = useGetCompanySettings();
   const company: CompanySettings = apiCompany ? {
-    ...apiCompany,
+    name: apiCompany.name,
+    cnpj: apiCompany.cnpj,
+    phone: apiCompany.phone,
+    email: apiCompany.email,
+    address: apiCompany.address,
     website: apiCompany.website ?? undefined,
     logoText: apiCompany.logoText ?? undefined,
+    signature: apiCompany.signature ?? undefined,
+    useSignature: apiCompany.useSignature ?? false,
   } : defaultCompany;
 
   // Auto-select first doc when loaded
@@ -196,7 +203,17 @@ export default function App() {
   };
 
   const handleSaveCompany = (comp: CompanySettings) => {
-    updateCompany.mutate({ data: { name: comp.name, cnpj: comp.cnpj, phone: comp.phone, email: comp.email, address: comp.address, website: comp.website, logoText: comp.logoText } });
+    updateCompany.mutate({ data: {
+      name: comp.name,
+      cnpj: comp.cnpj,
+      phone: comp.phone,
+      email: comp.email,
+      address: comp.address,
+      website: comp.website ?? null,
+      logoText: comp.logoText ?? null,
+      signature: comp.signature ?? null,
+      useSignature: comp.useSignature ?? false,
+    }});
   };
 
   const handleSaveDocument = (doc: DocumentData) => {
@@ -245,14 +262,8 @@ export default function App() {
   };
 
   const handleResetToDefaults = () => {
-    if (confirm('Isso redefinirá todos os produtos e serviços para o catálogo de exemplo. Deseja continuar?')) {
-      initialProducts.forEach(prod => {
-        createProduct.mutate({ data: { name: prod.name, description: prod.description, price: prod.price, unit: prod.unit } });
-      });
-      initialServices.forEach(serv => {
-        createService.mutate({ data: { name: serv.name, description: serv.description, price: serv.price, category: serv.category } });
-      });
-    }
+    // No default catalog in production mode — user starts fresh
+    alert('O catálogo está vazio. Adicione produtos e serviços manualmente.');
   };
 
   const handleUpdateDocumentStatus = (id: string, status: 'Pendente' | 'Em Andamento' | 'Aprovado' | 'Concluído' | 'Cancelado') => {

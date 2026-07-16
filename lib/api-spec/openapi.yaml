@@ -372,7 +372,7 @@ components:
 
     CompanySettings:
       type: object
-      required: [name, cnpj, phone, email, address]
+      required: [name, cnpj, phone, email, address, useSignature]
       properties:
         name:
           type: string
@@ -388,10 +388,14 @@ components:
           type: ["string", "null"]
         logoText:
           type: ["string", "null"]
+        signature:
+          type: ["string", "null"]
+        useSignature:
+          type: boolean
 
     CompanySettingsInput:
       type: object
-      required: [name, cnpj, phone, email, address]
+      required: [name, cnpj, phone, email, address, useSignature]
       properties:
         name:
           type: string
@@ -407,6 +411,10 @@ components:
           type: ["string", "null"]
         logoText:
           type: ["string", "null"]
+        signature:
+          type: ["string", "null"]
+        useSignature:
+          type: boolean
 
     Client:
       type: object

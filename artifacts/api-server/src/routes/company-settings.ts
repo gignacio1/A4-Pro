@@ -18,21 +18,24 @@ function rowToApi(row: typeof companySettingsTable.$inferSelect) {
     address: row.address,
     website: row.website ?? null,
     logoText: row.logoText ?? null,
+    signature: row.signature ?? null,
+    useSignature: row.useSignature,
   };
 }
 
 router.get("/company-settings", async (req, res): Promise<void> => {
   const rows = await db.select().from(companySettingsTable).limit(1);
   if (rows.length === 0) {
-    // Return default if not yet set
     const defaultSettings = GetCompanySettingsResponse.parse({
-      name: "Minha Empresa",
-      cnpj: "00.000.000/0001-00",
-      phone: "(00) 00000-0000",
-      email: "contato@minhaempresa.com",
-      address: "Endereço da Empresa, 000 - Cidade, UF",
+      name: "",
+      cnpj: "",
+      phone: "",
+      email: "",
+      address: "",
       website: null,
       logoText: null,
+      signature: null,
+      useSignature: false,
     });
     res.json(defaultSettings);
     return;
@@ -48,21 +51,30 @@ router.put("/company-settings", async (req, res): Promise<void> => {
     return;
   }
 
-  const { name, cnpj, phone, email, address, website, logoText } = parsed.data;
+  const { name, cnpj, phone, email, address, website, logoText, signature, useSignature } = parsed.data;
+
+  const values = {
+    name,
+    cnpj,
+    phone,
+    email,
+    address,
+    website: website ?? undefined,
+    logoText: logoText ?? undefined,
+    signature: signature ?? undefined,
+    useSignature: useSignature ?? false,
+  };
 
   const rows = await db.select().from(companySettingsTable).limit(1);
 
   let row: typeof companySettingsTable.$inferSelect;
   if (rows.length === 0) {
-    const [inserted] = await db
-      .insert(companySettingsTable)
-      .values({ name, cnpj, phone, email, address, website: website ?? undefined, logoText: logoText ?? undefined })
-      .returning();
+    const [inserted] = await db.insert(companySettingsTable).values(values).returning();
     row = inserted;
   } else {
     const [updated] = await db
       .update(companySettingsTable)
-      .set({ name, cnpj, phone, email, address, website: website ?? undefined, logoText: logoText ?? undefined })
+      .set(values)
       .where(eq(companySettingsTable.id, rows[0].id))
       .returning();
     row = updated;

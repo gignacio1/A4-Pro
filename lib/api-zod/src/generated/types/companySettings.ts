@@ -16,4 +16,7 @@ export interface CompanySettings {
   website?: string | null;
   /** @nullable */
   logoText?: string | null;
+  /** @nullable */
+  signature?: string | null;
+  useSignature: boolean;
 }

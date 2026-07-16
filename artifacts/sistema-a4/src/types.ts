@@ -30,6 +30,8 @@ export interface CompanySettings {
   address: string;
   website?: string;
   logoText?: string;
+  signature?: string;    // base64 PNG data URL of drawn signature
+  useSignature?: boolean; // whether to show signature on documents
 }
 
 export type DocumentType = 'orcamento' | 'ordem_servico' | 'laudo_tecnico' | 'recibo';

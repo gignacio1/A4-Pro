@@ -19,6 +19,9 @@ export interface CompanySettings {
   website?: string | null;
   /** @nullable */
   logoText?: string | null;
+  /** @nullable */
+  signature?: string | null;
+  useSignature: boolean;
 }
 
 export interface CompanySettingsInput {
@@ -31,6 +34,9 @@ export interface CompanySettingsInput {
   website?: string | null;
   /** @nullable */
   logoText?: string | null;
+  /** @nullable */
+  signature?: string | null;
+  useSignature: boolean;
 }
 
 export interface Client {
