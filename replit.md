@@ -1,15 +1,42 @@
-# [Project name]
+# Sistema A4 PRO
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Sistema para geração de documentos empresariais brasileiros (Orçamentos, Ordens de Serviço, Laudos Técnicos e Recibos) em formato A4, com exportação JPG via html2canvas.
 
-## Run & Operate
+## Run & Operate (Replit)
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/api-server run dev` — API server (porta definida pelo Replit)
+- `pnpm run typecheck` — typecheck completo
+- `pnpm run build` — typecheck + build de todos os pacotes
+- `pnpm --filter @workspace/api-spec run codegen` — regenera hooks e Zod schemas a partir do OpenAPI spec
+- `pnpm --filter @workspace/db run push` — aplica schema no banco (dev)
+- Env obrigatória: `DATABASE_URL` — string de conexão PostgreSQL
+
+## Deploy em VPS (linux/x64 ou linux/arm64)
+
+> O projeto suporta VPS ARM64 (ex: Oracle Cloud Free Tier, Ampere). Execute `bash start-vps.sh` após clonar.
+
+### Pré-requisitos na VPS
+- Node.js ≥ 20
+- pnpm (`npm i -g pnpm`)
+- PostgreSQL rodando (local ou externo)
+
+### Passos
+```bash
+git clone <seu-repo>
+cd <repo>
+cp .env.example .env
+nano .env          # preencha DATABASE_URL e SESSION_SECRET
+bash start-vps.sh  # instala deps, aplica schema, faz build
+```
+
+Após o build, o script mostra os comandos finais para subir a API e o frontend. Para rodar em background use `pm2` ou `screen`.
+
+### Variáveis de ambiente necessárias
+| Variável | Obrigatório | Descrição |
+|---|---|---|
+| `DATABASE_URL` | ✅ | `postgresql://user:pass@host:5432/db` |
+| `SESSION_SECRET` | ✅ | String aleatória longa (`openssl rand -hex 32`) |
+| `NODE_ENV` | — | `production` (padrão) |
 
 ## Stack
 
