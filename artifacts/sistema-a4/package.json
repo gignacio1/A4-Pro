@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "html2canvas": "^1.4.1"
+    "html2canvas": "^1.4.1",
+    "lightningcss": "^1.32.0"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -59,6 +60,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "catalog:",
     "input-otp": "^1.4.2",
+    "lightningcss-linux-arm64-gnu": "^1.32.0",
     "lucide-react": "catalog:",
     "next-themes": "^0.4.6",
     "react": "catalog:",
