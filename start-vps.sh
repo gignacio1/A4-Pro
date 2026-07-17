@@ -22,7 +22,10 @@ PORT="${PORT:-3000}"
 
 echo ""
 echo "=== 1/4  Instalando dependências ==="
-npm install
+# Remove node_modules antigos (pnpm ou cache do Replit) para evitar conflitos
+find . -name "node_modules" -maxdepth 4 -type d -prune | xargs rm -rf 2>/dev/null || true
+# Força o registry público — o package-lock.json pode conter URLs internas do Replit
+npm install --registry https://registry.npmjs.org
 
 echo ""
 echo "=== 2/4  Aplicando schema no banco ==="
