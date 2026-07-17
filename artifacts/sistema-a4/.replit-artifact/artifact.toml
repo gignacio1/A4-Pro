@@ -11,10 +11,10 @@ paths = [ "/" ]
 localPort = 23508
 
 [services.development]
-run = "pnpm --filter @workspace/sistema-a4 run dev"
+run = "npm run dev -w @workspace/sistema-a4"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/sistema-a4", "run", "build" ]
+build = [ "npm", "run", "build", "-w", "@workspace/sistema-a4" ]
 serve = "static"
 publicDir = "artifacts/sistema-a4/dist/public"
 

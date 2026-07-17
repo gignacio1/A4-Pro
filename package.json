@@ -2,19 +2,23 @@
   "name": "workspace",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
-    "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
-  },
   "private": true,
-  "dependencies": {
-    "@esbuild/linux-arm64": "0.27.3",
-    "@replit/connectors-sdk": "^0.4.1"
+  "workspaces": [
+    "artifacts/*",
+    "lib/*",
+    "scripts"
+  ],
+  "scripts": {
+    "build": "npm run typecheck && npm run build --workspaces --if-present",
+    "typecheck:libs": "tsc --build",
+    "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
-    "@rollup/rollup-linux-arm64-gnu": "^4.62.2",
     "prettier": "^3.9.5",
     "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "esbuild": "0.27.3",
+    "@esbuild-kit/esm-loader": "npm:tsx@^4.21.0"
   }
 }
