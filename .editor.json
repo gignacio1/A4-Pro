@@ -1,6 +1,6 @@
 {
-  "runCommand": "cd artifacts/sistema-a4 && PORT=5002 BASE_PATH=/ pnpm run dev",
-  "installCommand": "pnpm install",
+  "runCommand": "bash sistema-a4/start.sh",
+  "installCommand": "npm install",
   "previewPort": 5002,
-  "summary": "Sistema A4-Profissional — Frontend React + Vite + Tailwind (porta 5002)"
+  "summary": "Sistema A4-Profissional — Frontend Vite (5002) com proxy para API Server (5001)"
 }
