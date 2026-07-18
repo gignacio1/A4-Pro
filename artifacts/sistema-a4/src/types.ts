@@ -40,6 +40,7 @@ export interface DocumentItem {
   id: string;
   name: string;
   type: 'produto' | 'servico';
+  unit?: string; // e.g. Unidade, Metro, Quilo
   quantity: number;
   price: number;
   total: number;

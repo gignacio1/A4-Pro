@@ -217,6 +217,24 @@ export default function App() {
   };
 
   const handleSaveDocument = (doc: DocumentData) => {
+    // Auto-save client if not already in the list (match by name, case-insensitive)
+    if (doc.client.name.trim()) {
+      const alreadyExists = clients.some(
+        c => c.name.trim().toLowerCase() === doc.client.name.trim().toLowerCase()
+      );
+      if (!alreadyExists) {
+        createClient.mutate({
+          data: {
+            name: doc.client.name,
+            document: doc.client.document,
+            phone: doc.client.phone,
+            email: doc.client.email,
+            address: doc.client.address,
+          }
+        });
+      }
+    }
+
     const isExisting = doc.id && documents.some(d => d.id === doc.id);
     const data = cleanDocumentForApi(doc);
 
