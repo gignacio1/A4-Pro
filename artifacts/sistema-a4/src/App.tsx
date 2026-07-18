@@ -452,6 +452,8 @@ export default function App() {
                   onSaveDocument={handleSaveDocument}
                   activeDocument={previewDocument}
                   onSelectDocument={setPreviewDocument}
+                  onCreateProduct={(data) => createProduct.mutate({ data })}
+                  onCreateService={(data) => createService.mutate({ data })}
                 />
               </div>
               <div className="lg:col-span-7 flex justify-center">
