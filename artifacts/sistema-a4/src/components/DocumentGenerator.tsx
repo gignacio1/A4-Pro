@@ -491,6 +491,107 @@ export default function DocumentGenerator({
             Itens do Documento ({items.length})
           </h3>
 
+          {/* ── SERVIÇOS ── */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Wrench className="h-3.5 w-3.5 text-indigo-500" />
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Serviços</span>
+            </div>
+
+            <div ref={serviceSearchRef} className="relative">
+              <div className="relative">
+                <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  className={`${inputClass} pl-8`}
+                  value={serviceSearch}
+                  onChange={e => { setServiceSearch(e.target.value); setShowServiceDropdown(true); setNewServiceForm(null); }}
+                  onFocus={() => setShowServiceDropdown(true)}
+                  placeholder="Buscar serviço no catálogo..."
+                />
+              </div>
+
+              {/* Service dropdown results */}
+              {showServiceDropdown && serviceSearch && filteredServices.length > 0 && (
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
+                  {filteredServices.map(item => (
+                    <button
+                      key={item.id}
+                      onMouseDown={() => { handleAddCatalogItem(item, 'servico'); setShowServiceDropdown(false); }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-indigo-50 transition-colors text-xs border-b border-slate-50 last:border-0 cursor-pointer"
+                    >
+                      <div className="text-left">
+                        <span className="font-medium text-slate-800 block">{item.name}</span>
+                        {item.category && <span className="text-[10px] text-slate-400">{item.category}</span>}
+                      </div>
+                      <span className="font-mono font-bold text-slate-700">{formatCurrency(item.price)}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* No results → offer creation */}
+            {serviceSearch && filteredServices.length === 0 && !newServiceForm && (
+              <button
+                onClick={() => setNewServiceForm({ name: serviceSearch, price: '', category: '', description: '' })}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-indigo-300 text-xs text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Criar serviço "{serviceSearch}" no catálogo e adicionar
+              </button>
+            )}
+
+            {/* Inline service creation form */}
+            {newServiceForm && (
+              <div className="border border-indigo-200 bg-indigo-50/50 rounded-xl p-3 space-y-2">
+                <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Novo Serviço</p>
+                <input
+                  className={inputClass}
+                  placeholder="Nome do serviço *"
+                  value={newServiceForm.name}
+                  onChange={e => setNewServiceForm({ ...newServiceForm, name: e.target.value })}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    className={inputClass}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Preço (R$)"
+                    value={newServiceForm.price}
+                    onChange={e => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
+                  />
+                  <input
+                    className={inputClass}
+                    placeholder="Categoria (ex: Elétrica)"
+                    value={newServiceForm.category}
+                    onChange={e => setNewServiceForm({ ...newServiceForm, category: e.target.value })}
+                  />
+                </div>
+                <input
+                  className={inputClass}
+                  placeholder="Descrição (opcional)"
+                  value={newServiceForm.description}
+                  onChange={e => setNewServiceForm({ ...newServiceForm, description: e.target.value })}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCreateAndAddService}
+                    className="flex-1 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors cursor-pointer"
+                  >
+                    Criar e Adicionar
+                  </button>
+                  <button
+                    onClick={() => { setNewServiceForm(null); setServiceSearch(''); }}
+                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* ── PRODUTOS ── */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -584,107 +685,6 @@ export default function DocumentGenerator({
                   </button>
                   <button
                     onClick={() => { setNewProductForm(null); setProductSearch(''); }}
-                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── SERVIÇOS ── */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Wrench className="h-3.5 w-3.5 text-indigo-500" />
-              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Serviços</span>
-            </div>
-
-            <div ref={serviceSearchRef} className="relative">
-              <div className="relative">
-                <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  className={`${inputClass} pl-8`}
-                  value={serviceSearch}
-                  onChange={e => { setServiceSearch(e.target.value); setShowServiceDropdown(true); setNewServiceForm(null); }}
-                  onFocus={() => setShowServiceDropdown(true)}
-                  placeholder="Buscar serviço no catálogo..."
-                />
-              </div>
-
-              {/* Service dropdown results */}
-              {showServiceDropdown && serviceSearch && filteredServices.length > 0 && (
-                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
-                  {filteredServices.map(item => (
-                    <button
-                      key={item.id}
-                      onMouseDown={() => { handleAddCatalogItem(item, 'servico'); setShowServiceDropdown(false); }}
-                      className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-indigo-50 transition-colors text-xs border-b border-slate-50 last:border-0 cursor-pointer"
-                    >
-                      <div className="text-left">
-                        <span className="font-medium text-slate-800 block">{item.name}</span>
-                        {item.category && <span className="text-[10px] text-slate-400">{item.category}</span>}
-                      </div>
-                      <span className="font-mono font-bold text-slate-700">{formatCurrency(item.price)}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* No results → offer creation */}
-            {serviceSearch && filteredServices.length === 0 && !newServiceForm && (
-              <button
-                onClick={() => setNewServiceForm({ name: serviceSearch, price: '', category: '', description: '' })}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-indigo-300 text-xs text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Criar serviço "{serviceSearch}" no catálogo e adicionar
-              </button>
-            )}
-
-            {/* Inline service creation form */}
-            {newServiceForm && (
-              <div className="border border-indigo-200 bg-indigo-50/50 rounded-xl p-3 space-y-2">
-                <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Novo Serviço</p>
-                <input
-                  className={inputClass}
-                  placeholder="Nome do serviço *"
-                  value={newServiceForm.name}
-                  onChange={e => setNewServiceForm({ ...newServiceForm, name: e.target.value })}
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    className={inputClass}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="Preço (R$)"
-                    value={newServiceForm.price}
-                    onChange={e => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
-                  />
-                  <input
-                    className={inputClass}
-                    placeholder="Categoria (ex: Elétrica)"
-                    value={newServiceForm.category}
-                    onChange={e => setNewServiceForm({ ...newServiceForm, category: e.target.value })}
-                  />
-                </div>
-                <input
-                  className={inputClass}
-                  placeholder="Descrição (opcional)"
-                  value={newServiceForm.description}
-                  onChange={e => setNewServiceForm({ ...newServiceForm, description: e.target.value })}
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleCreateAndAddService}
-                    className="flex-1 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors cursor-pointer"
-                  >
-                    Criar e Adicionar
-                  </button>
-                  <button
-                    onClick={() => { setNewServiceForm(null); setServiceSearch(''); }}
                     className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
                   >
                     Cancelar
