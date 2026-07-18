@@ -4,12 +4,19 @@ Sistema para geração de documentos empresariais brasileiros (Orçamentos, Orde
 
 ## Run & Operate (Replit)
 
-- `pnpm --filter @workspace/api-server run dev` — API server (porta definida pelo Replit)
-- `pnpm run typecheck` — typecheck completo
-- `pnpm run build` — typecheck + build de todos os pacotes
-- `pnpm --filter @workspace/api-spec run codegen` — regenera hooks e Zod schemas a partir do OpenAPI spec
-- `pnpm --filter @workspace/db run push` — aplica schema no banco (dev)
-- Env obrigatória: `DATABASE_URL` — string de conexão PostgreSQL
+Workflows (managed by Replit — start from the Workflows panel):
+- **artifacts/sistema-a4: web** — React frontend (Vite, port assigned by Replit; proxies `/api` → `localhost:8080`)
+- **artifacts/api-server: API Server** — Express API (port 8080)
+
+One-off commands:
+- `npm run -w @workspace/db push` — apply schema to the dev database (Drizzle push)
+- `npm run typecheck` — full typecheck across all workspaces
+- `npm run build` — typecheck + build all packages
+- `npm run -w @workspace/api-spec codegen` — regenerate React hooks and Zod schemas from OpenAPI spec
+
+Environment:
+- `DATABASE_URL` — auto-injected by Replit (runtime-managed, no manual setup needed)
+- `SESSION_SECRET` — stored as a Replit Secret ✓
 
 ## Deploy em VPS (linux/x64 ou linux/arm64)
 

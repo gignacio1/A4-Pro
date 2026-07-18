@@ -74,11 +74,11 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
       '/healthz': {
-        target: 'http://localhost:5001',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
     },
