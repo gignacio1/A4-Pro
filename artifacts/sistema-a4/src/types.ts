@@ -30,6 +30,7 @@ export interface CompanySettings {
   address: string;
   website?: string;
   logoText?: string;
+  logoUrl?: string;      // base64 image data URL of uploaded logo
   signature?: string;    // base64 PNG data URL of drawn signature
   useSignature?: boolean; // whether to show signature on documents
 }

@@ -318,7 +318,13 @@ export default function A4Document({ document, company }: A4DocumentProps) {
               {/* Company Header Block */}
               <div className="flex items-start justify-between border-b-2 border-slate-200 pb-5">
                 <div className="flex items-center gap-4">
-                  {company.logoText ? (
+                  {company.logoUrl ? (
+                    <img
+                      src={company.logoUrl}
+                      alt="Logo"
+                      className="h-14 w-14 rounded-xl object-contain bg-white border border-slate-100"
+                    />
+                  ) : company.logoText ? (
                     <div className="h-14 w-14 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-2xl tracking-wider">
                       {company.logoText}
                     </div>

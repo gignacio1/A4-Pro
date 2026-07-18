@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { CompanySettings } from '../types';
-import { Save, Building2, Eye, PenLine, Trash2, CheckCircle2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Save, Building2, Eye, PenLine, Trash2, CheckCircle2, ToggleLeft, ToggleRight, ImagePlus } from 'lucide-react';
 
 interface CompanySettingsFormProps {
   company: CompanySettings;
@@ -139,15 +139,57 @@ export default function CompanySettingsForm({ company, onSaveCompany }: CompanyS
             <input className={inputClass} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Nome da sua empresa" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>CNPJ *</label>
-              <input className={inputClass} value={form.cnpj} onChange={e => setForm({ ...form, cnpj: e.target.value })} placeholder="00.000.000/0001-00" />
-            </div>
-            <div>
-              <label className={labelClass}>Sigla do Logo</label>
-              <input className={inputClass} maxLength={4} value={form.logoText || ''} onChange={e => setForm({ ...form, logoText: e.target.value.toUpperCase() })} placeholder="Ex: TS, ABC" />
-            </div>
+          <div>
+            <label className={labelClass}>CNPJ *</label>
+            <input className={inputClass} value={form.cnpj} onChange={e => setForm({ ...form, cnpj: e.target.value })} placeholder="00.000.000/0001-00" />
+          </div>
+
+          {/* Logo upload */}
+          <div>
+            <label className={labelClass}>Logo da Empresa</label>
+            {form.logoUrl ? (
+              <div className="flex items-center gap-3">
+                <img src={form.logoUrl} alt="Logo" className="h-14 w-14 rounded-xl object-contain border border-slate-200 bg-white p-1" />
+                <div className="flex flex-col gap-1.5">
+                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">
+                    <ImagePlus className="h-3.5 w-3.5" />
+                    Trocar logo
+                    <input type="file" accept="image/*" className="hidden" onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = ev => setForm(f => ({ ...f, logoUrl: ev.target?.result as string, logoText: undefined }));
+                      reader.readAsDataURL(file);
+                      e.target.value = '';
+                    }} />
+                  </label>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, logoUrl: undefined }))}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer">
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Remover logo
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center gap-2 w-full py-5 rounded-xl border-2 border-dashed border-slate-200 hover:border-amber-400 hover:bg-amber-50/40 transition-colors cursor-pointer">
+                <ImagePlus className="h-6 w-6 text-slate-300" />
+                <span className="text-xs text-slate-400 font-medium">Clique para enviar uma imagem (PNG, JPG, SVG)</span>
+                <span className="text-[10px] text-slate-300">A logo substituirá a sigla no cabeçalho dos documentos</span>
+                <input type="file" accept="image/*" className="hidden" onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = ev => setForm(f => ({ ...f, logoUrl: ev.target?.result as string, logoText: undefined }));
+                  reader.readAsDataURL(file);
+                  e.target.value = '';
+                }} />
+              </label>
+            )}
+          </div>
+
+          <div>
+            <label className={labelClass}>Sigla do Logo <span className="normal-case font-normal text-slate-300">(usado quando não há logo)</span></label>
+            <input className={inputClass} maxLength={4} value={form.logoText || ''} onChange={e => setForm({ ...form, logoText: e.target.value.toUpperCase() })} placeholder="Ex: TS, ABC" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -275,7 +317,9 @@ export default function CompanySettingsForm({ company, onSaveCompany }: CompanyS
             <div className="bg-white border border-slate-200 rounded-xl p-4">
               <div className="flex items-start justify-between border-b-2 border-slate-200 pb-4">
                 <div className="flex items-center gap-3">
-                  {form.logoText ? (
+                  {form.logoUrl ? (
+                    <img src={form.logoUrl} alt="Logo" className="h-11 w-11 rounded-xl object-contain border border-slate-100 bg-white shrink-0" />
+                  ) : form.logoText ? (
                     <div className="h-11 w-11 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold text-lg tracking-wider shrink-0">
                       {form.logoText}
                     </div>

@@ -4,7 +4,7 @@ import { Product, Service, CompanySettings, DocumentData } from './types';
 
 const defaultCompany: CompanySettings = {
   name: '', cnpj: '', phone: '', email: '', address: '',
-  website: undefined, logoText: undefined,
+  website: undefined, logoText: undefined, logoUrl: undefined,
   signature: undefined, useSignature: false,
 };
 import ClientManager, { SavedClient } from './components/ClientManager';
@@ -135,6 +135,7 @@ export default function App() {
     address: apiCompany.address,
     website: apiCompany.website ?? undefined,
     logoText: apiCompany.logoText ?? undefined,
+    logoUrl: apiCompany.logoUrl ?? undefined,
     signature: apiCompany.signature ?? undefined,
     useSignature: apiCompany.useSignature ?? false,
   } : defaultCompany;
@@ -211,6 +212,7 @@ export default function App() {
       address: comp.address,
       website: comp.website ?? null,
       logoText: comp.logoText ?? null,
+      logoUrl: comp.logoUrl ?? null,
       signature: comp.signature ?? null,
       useSignature: comp.useSignature ?? false,
     }});

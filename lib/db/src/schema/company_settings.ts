@@ -11,6 +11,7 @@ export const companySettingsTable = pgTable("company_settings", {
   address: text("address").notNull(),
   website: text("website"),
   logoText: text("logo_text"),
+  logoUrl: text("logo_url"),
   signature: text("signature"),
   useSignature: boolean("use_signature").notNull().default(false),
 });

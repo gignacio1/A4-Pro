@@ -18,6 +18,7 @@ function rowToApi(row: typeof companySettingsTable.$inferSelect) {
     address: row.address,
     website: row.website ?? null,
     logoText: row.logoText ?? null,
+    logoUrl: row.logoUrl ?? null,
     signature: row.signature ?? null,
     useSignature: row.useSignature,
   };
@@ -34,6 +35,7 @@ router.get("/company-settings", async (req, res): Promise<void> => {
       address: "",
       website: null,
       logoText: null,
+      logoUrl: null,
       signature: null,
       useSignature: false,
     });
@@ -51,7 +53,7 @@ router.put("/company-settings", async (req, res): Promise<void> => {
     return;
   }
 
-  const { name, cnpj, phone, email, address, website, logoText, signature, useSignature } = parsed.data;
+  const { name, cnpj, phone, email, address, website, logoText, logoUrl, signature, useSignature } = parsed.data;
 
   const values = {
     name,
@@ -61,6 +63,7 @@ router.put("/company-settings", async (req, res): Promise<void> => {
     address,
     website: website ?? undefined,
     logoText: logoText ?? undefined,
+    logoUrl: logoUrl ?? undefined,
     signature: signature ?? undefined,
     useSignature: useSignature ?? false,
   };
