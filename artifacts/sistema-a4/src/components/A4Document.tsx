@@ -103,8 +103,8 @@ export default function A4Document({ document, company }: A4DocumentProps) {
         if (!val) continue;
         const resolved = resolveColor(val);
         if (resolved !== val) {
-          snapshots.push({ el, prop, original: (el.style as never)[prop] ?? '' });
-          (el.style as never)[prop] = resolved;
+          snapshots.push({ el, prop, original: (el.style as any)[prop] ?? '' });
+          (el.style as any)[prop] = resolved;
         }
       }
     }
@@ -185,7 +185,7 @@ export default function A4Document({ document, company }: A4DocumentProps) {
     } finally {
       // Restore all inline styles that were overridden
       for (const { el, prop, original } of snapshots) {
-        (el.style as never)[prop] = original;
+        (el.style as any)[prop] = original;
       }
       setIsExporting(false);
     }

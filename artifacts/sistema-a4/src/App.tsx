@@ -135,7 +135,7 @@ export default function App() {
     address: apiCompany.address,
     website: apiCompany.website ?? undefined,
     logoText: apiCompany.logoText ?? undefined,
-    logoUrl: apiCompany.logoUrl ?? undefined,
+    logoUrl: (apiCompany as any).logoUrl ?? undefined,
     signature: apiCompany.signature ?? undefined,
     useSignature: apiCompany.useSignature ?? false,
   } : defaultCompany;
@@ -212,7 +212,7 @@ export default function App() {
       address: comp.address,
       website: comp.website ?? null,
       logoText: comp.logoText ?? null,
-      logoUrl: comp.logoUrl ?? null,
+      logoUrl: (comp as any).logoUrl ?? null,
       signature: comp.signature ?? null,
       useSignature: comp.useSignature ?? false,
     }});

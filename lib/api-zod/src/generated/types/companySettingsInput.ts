@@ -15,6 +15,8 @@ export interface CompanySettingsInput {
   /** @nullable */
   website?: string | null;
   /** @nullable */
+  logoUrl?: string | null;
+  /** @nullable */
   logoText?: string | null;
   /** @nullable */
   signature?: string | null;
