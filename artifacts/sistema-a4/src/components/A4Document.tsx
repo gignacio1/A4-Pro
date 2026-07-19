@@ -360,25 +360,25 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                   Informações do Cliente
                 </h3>
                 <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs">
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">Nome / Razão Social:</span>
-                    <span className="font-semibold text-slate-800 text-[13px]">{document.client.name}</span>
+                    <span className="font-semibold text-slate-800 text-[13px] break-words">{document.client.name}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">CPF / CNPJ:</span>
                     <span className="font-semibold text-slate-800 text-[13px]">{document.client.document || '-'}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">Telefone:</span>
                     <span className="font-semibold text-slate-800">{document.client.phone || '-'}</span>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-slate-400 block">E-mail:</span>
-                    <span className="font-semibold text-slate-800 truncate block">{document.client.email || '-'}</span>
+                    <span className="font-semibold text-slate-800 break-all block">{document.client.email || '-'}</span>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-2 min-w-0">
                     <span className="text-slate-400 block">Endereço Completo:</span>
-                    <span className="font-semibold text-slate-800">{document.client.address || '-'}</span>
+                    <span className="font-semibold text-slate-800 break-words">{document.client.address || '-'}</span>
                   </div>
                 </div>
               </div>
