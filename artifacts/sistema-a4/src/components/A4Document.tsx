@@ -129,10 +129,21 @@ export default function A4Document({ document, company }: A4DocumentProps) {
             clonedSheet.style.margin = '0';
             clonedSheet.style.padding = '48px';
 
-            // Force text centering on badges (html2canvas ignores inline-flex alignment)
+            // Force text alignment (html2canvas ignores Tailwind text-align classes on table cells)
             clonedDoc.querySelectorAll<HTMLElement>('[data-badge]').forEach(el => {
               el.style.display = 'inline-block';
               el.style.textAlign = 'center';
+            });
+            clonedDoc.querySelectorAll<HTMLElement>('th[style], td[style]').forEach(el => {
+              const ta = el.style.textAlign;
+              if (ta) el.style.textAlign = ta; // re-assert inline style
+            });
+            // Fix table cells that only have Tailwind classes for alignment
+            clonedDoc.querySelectorAll<HTMLElement>('th, td').forEach(el => {
+              const computed = window.getComputedStyle(el);
+              if (!el.style.textAlign && computed.textAlign) {
+                el.style.textAlign = computed.textAlign;
+              }
             });
 
             let parent = clonedSheet.parentElement;
@@ -350,7 +361,8 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                 <div className="text-right">
                   <div
                     data-badge="doc-type"
-                    className={`inline-block px-4 py-1.5 border rounded-lg font-bold text-sm tracking-widest text-center ${docStyle.color}`}
+                    className={`inline-block px-4 py-1.5 border rounded-lg font-bold text-sm ${docStyle.color}`}
+                    style={{ letterSpacing: '0.08em', textIndent: '0.08em', textAlign: 'center' }}
                   >
                     {docStyle.title}
                   </div>
@@ -441,10 +453,10 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                       <thead>
                         <tr className="border-b-2 border-slate-300 text-slate-400 font-bold uppercase tracking-wider">
                           <th className="py-2.5 px-2">Descrição do Produto / Serviço</th>
-                          <th className="py-2.5 px-2 text-center w-24">Tipo</th>
-                          <th className="py-2.5 px-2 text-center w-16">Qtd</th>
-                          <th className="py-2.5 px-2 text-right w-28">V. Unitário</th>
-                          <th className="py-2.5 px-2 text-right w-28">V. Total</th>
+                          <th className="py-2.5 px-2 w-24" style={{ textAlign: 'center' }}>Tipo</th>
+                          <th className="py-2.5 px-2 w-16" style={{ textAlign: 'center' }}>Qtd</th>
+                          <th className="py-2.5 px-2 w-28" style={{ textAlign: 'right' }}>V. Unitário</th>
+                          <th className="py-2.5 px-2 w-28" style={{ textAlign: 'right' }}>V. Total</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -458,12 +470,13 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                           document.items.map((item, index) => (
                             <tr key={item.id + index} className="hover:bg-slate-50/50">
                               <td className="py-3 px-2 font-medium text-slate-900">{item.name}</td>
-                              <td className="py-3 px-2 text-center">
+                              <td className="py-3 px-2" style={{ textAlign: 'center' }}>
                                 <span
                                   data-badge="item-type"
-                                  className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase text-center ${
+                                  className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                                     item.type === 'produto' ? 'bg-blue-50 text-blue-700' : 'bg-indigo-50 text-indigo-700'
                                   }`}
+                                  style={{ display: 'inline-block', textAlign: 'center', letterSpacing: '0.04em', textIndent: '0.04em' }}
                                 >
                                   {item.type}
                                 </span>
