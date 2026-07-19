@@ -342,7 +342,7 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                 </div>
 
                 <div className="text-right">
-                  <div className={`inline-block px-4 py-1.5 border rounded-lg font-bold text-sm tracking-widest ${docStyle.color}`}>
+                  <div className={`inline-flex items-center justify-center px-4 py-1.5 border rounded-lg font-bold text-sm tracking-widest ${docStyle.color}`}>
                     {docStyle.title}
                   </div>
                   <div className="mt-2 text-xs font-mono text-slate-500 space-y-0.5">
@@ -450,7 +450,7 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                             <tr key={item.id + index} className="hover:bg-slate-50/50">
                               <td className="py-3 px-2 font-medium text-slate-900">{item.name}</td>
                               <td className="py-3 px-2 text-center">
-                                <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                                   item.type === 'produto' ? 'bg-blue-50 text-blue-700' : 'bg-indigo-50 text-indigo-700'
                                 }`}>
                                   {item.type}
@@ -479,7 +479,7 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                           <span className="font-semibold font-mono">-{formatCurrency(document.discount)}</span>
                         </div>
                       ) : null}
-                      <div className="flex justify-between text-[14px] font-bold border-t border-slate-200 pt-2 text-slate-900 bg-slate-50 px-3 py-2 rounded-lg border">
+                      <div className="flex items-center justify-between text-[14px] font-bold border border-slate-200 pt-2 text-slate-900 bg-slate-50 px-3 py-2 rounded-lg">
                         <span>Valor Total:</span>
                         <span className="font-mono">{formatCurrency(document.totalAmount)}</span>
                       </div>
