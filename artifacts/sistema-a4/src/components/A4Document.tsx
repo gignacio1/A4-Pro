@@ -129,6 +129,12 @@ export default function A4Document({ document, company }: A4DocumentProps) {
             clonedSheet.style.margin = '0';
             clonedSheet.style.padding = '48px';
 
+            // Force text centering on badges (html2canvas ignores inline-flex alignment)
+            clonedDoc.querySelectorAll<HTMLElement>('[data-badge]').forEach(el => {
+              el.style.display = 'inline-block';
+              el.style.textAlign = 'center';
+            });
+
             let parent = clonedSheet.parentElement;
             while (parent) {
               parent.style.transform = 'none';
@@ -342,7 +348,10 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                 </div>
 
                 <div className="text-right">
-                  <div className={`inline-flex items-center justify-center px-4 py-1.5 border rounded-lg font-bold text-sm tracking-widest ${docStyle.color}`}>
+                  <div
+                    data-badge="doc-type"
+                    className={`inline-block px-4 py-1.5 border rounded-lg font-bold text-sm tracking-widest text-center ${docStyle.color}`}
+                  >
                     {docStyle.title}
                   </div>
                   <div className="mt-2 text-xs font-mono text-slate-500 space-y-0.5">
@@ -450,9 +459,12 @@ export default function A4Document({ document, company }: A4DocumentProps) {
                             <tr key={item.id + index} className="hover:bg-slate-50/50">
                               <td className="py-3 px-2 font-medium text-slate-900">{item.name}</td>
                               <td className="py-3 px-2 text-center">
-                                <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                  item.type === 'produto' ? 'bg-blue-50 text-blue-700' : 'bg-indigo-50 text-indigo-700'
-                                }`}>
+                                <span
+                                  data-badge="item-type"
+                                  className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase text-center ${
+                                    item.type === 'produto' ? 'bg-blue-50 text-blue-700' : 'bg-indigo-50 text-indigo-700'
+                                  }`}
+                                >
                                   {item.type}
                                 </span>
                               </td>
