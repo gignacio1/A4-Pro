@@ -21,6 +21,7 @@ function rowToApi(row: typeof companySettingsTable.$inferSelect) {
     logoUrl: row.logoUrl ?? null,
     signature: row.signature ?? null,
     useSignature: row.useSignature,
+    documentTemplate: row.documentTemplate ?? 'classic',
   };
 }
 
@@ -38,6 +39,7 @@ router.get("/company-settings", async (req, res): Promise<void> => {
       logoUrl: null,
       signature: null,
       useSignature: false,
+      documentTemplate: 'classic',
     });
     res.json(defaultSettings);
     return;
@@ -53,7 +55,7 @@ router.put("/company-settings", async (req, res): Promise<void> => {
     return;
   }
 
-  const { name, cnpj, phone, email, address, website, logoText, logoUrl, signature, useSignature } = parsed.data;
+  const { name, cnpj, phone, email, address, website, logoText, logoUrl, signature, useSignature, documentTemplate } = parsed.data;
 
   const values = {
     name,
@@ -66,6 +68,7 @@ router.put("/company-settings", async (req, res): Promise<void> => {
     logoUrl: logoUrl ?? undefined,
     signature: signature ?? undefined,
     useSignature: useSignature ?? false,
+    documentTemplate: documentTemplate ?? 'classic',
   };
 
   const rows = await db.select().from(companySettingsTable).limit(1);

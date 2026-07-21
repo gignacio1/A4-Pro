@@ -5,10 +5,11 @@ import { Product, Service, CompanySettings, DocumentData } from './types';
 const defaultCompany: CompanySettings = {
   name: '', cnpj: '', phone: '', email: '', address: '',
   website: undefined, logoText: undefined, logoUrl: undefined,
-  signature: undefined, useSignature: false,
+  signature: undefined, useSignature: false, documentTemplate: 'classic',
 };
 import ClientManager, { SavedClient } from './components/ClientManager';
 import A4Document from './components/A4Document';
+import A4DocumentPro from './components/A4DocumentPro';
 import ProductServiceManager from './components/ProductServiceManager';
 import DocumentGenerator from './components/DocumentGenerator';
 import DocumentHistory from './components/DocumentHistory';
@@ -138,6 +139,7 @@ export default function App() {
     logoUrl: (apiCompany as any).logoUrl ?? undefined,
     signature: apiCompany.signature ?? undefined,
     useSignature: apiCompany.useSignature ?? false,
+    documentTemplate: (apiCompany.documentTemplate ?? 'classic') as 'classic' | 'pro',
   } : defaultCompany;
 
   // Auto-select first doc when loaded
@@ -215,6 +217,7 @@ export default function App() {
       logoUrl: (comp as any).logoUrl ?? null,
       signature: comp.signature ?? null,
       useSignature: comp.useSignature ?? false,
+      documentTemplate: comp.documentTemplate ?? 'classic',
     }});
   };
 
@@ -460,7 +463,9 @@ export default function App() {
               </div>
               <div className="lg:col-span-7 flex justify-center">
                 {previewDocument ? (
-                  <A4Document document={previewDocument} company={company} />
+                  company.documentTemplate === 'pro'
+                    ? <A4DocumentPro document={previewDocument} company={company} />
+                    : <A4Document document={previewDocument} company={company} />
                 ) : (
                   <div className="bg-white p-12 text-center rounded-2xl border border-dashed border-slate-200 w-full flex flex-col items-center justify-center min-h-[500px]">
                     <Printer className="h-10 w-10 text-slate-300 mb-3 animate-pulse" />

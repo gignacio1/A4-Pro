@@ -33,6 +33,7 @@ export interface CompanySettings {
   logoUrl?: string;      // base64 image data URL of uploaded logo
   signature?: string;    // base64 PNG data URL of drawn signature
   useSignature?: boolean; // whether to show signature on documents
+  documentTemplate?: 'classic' | 'pro'; // layout template selection
 }
 
 export type DocumentType = 'orcamento' | 'ordem_servico' | 'laudo_tecnico' | 'recibo';

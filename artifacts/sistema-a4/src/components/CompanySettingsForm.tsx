@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { CompanySettings } from '../types';
-import { Save, Building2, Eye, PenLine, Trash2, CheckCircle2, ToggleLeft, ToggleRight, ImagePlus } from 'lucide-react';
+import { Save, Building2, Eye, PenLine, Trash2, CheckCircle2, ToggleLeft, ToggleRight, ImagePlus, LayoutTemplate } from 'lucide-react';
 
 interface CompanySettingsFormProps {
   company: CompanySettings;
@@ -211,6 +211,95 @@ export default function CompanySettingsForm({ company, onSaveCompany }: CompanyS
           <div>
             <label className={labelClass}>Website (Opcional)</label>
             <input className={inputClass} value={form.website || ''} onChange={e => setForm({ ...form, website: e.target.value })} placeholder="www.suaempresa.com.br" />
+          </div>
+        </div>
+
+        {/* Template selector */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span className="h-10 w-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
+              <LayoutTemplate className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Template de Documento</h2>
+              <p className="text-xs text-slate-400 mt-0.5">Escolha o layout visual dos documentos gerados.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {/* Classic */}
+            <button
+              type="button"
+              onClick={() => setForm(f => ({ ...f, documentTemplate: 'classic' }))}
+              className={`relative rounded-xl border-2 p-3 text-left transition-all cursor-pointer ${
+                (form.documentTemplate ?? 'classic') === 'classic'
+                  ? 'border-amber-400 bg-amber-50'
+                  : 'border-slate-200 hover:border-slate-300 bg-white'
+              }`}
+            >
+              {(form.documentTemplate ?? 'classic') === 'classic' && (
+                <span className="absolute top-2 right-2 h-4 w-4 bg-amber-400 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="h-3 w-3 text-white" />
+                </span>
+              )}
+              {/* Mini preview classic */}
+              <div className="w-full h-20 bg-white border border-slate-200 rounded-lg overflow-hidden mb-2">
+                <div className="flex items-center gap-1 p-1.5 border-b border-slate-100">
+                  <div className="h-4 w-4 bg-slate-800 rounded" />
+                  <div className="flex-1 space-y-0.5">
+                    <div className="h-1.5 bg-slate-700 rounded w-16" />
+                    <div className="h-1 bg-slate-300 rounded w-10" />
+                  </div>
+                  <div className="h-4 w-10 border border-blue-300 rounded text-[5px] flex items-center justify-center text-blue-600 font-bold">ORC.</div>
+                </div>
+                <div className="p-1.5 space-y-1">
+                  <div className="h-1 bg-slate-200 rounded w-full" />
+                  <div className="h-1 bg-slate-100 rounded w-3/4" />
+                  <div className="h-1 bg-slate-200 rounded w-full" />
+                </div>
+              </div>
+              <p className="text-xs font-bold text-slate-800">Clássico</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Layout limpo e minimalista (padrão)</p>
+            </button>
+
+            {/* Pro */}
+            <button
+              type="button"
+              onClick={() => setForm(f => ({ ...f, documentTemplate: 'pro' }))}
+              className={`relative rounded-xl border-2 p-3 text-left transition-all cursor-pointer ${
+                form.documentTemplate === 'pro'
+                  ? 'border-blue-600 bg-blue-50'
+                  : 'border-slate-200 hover:border-slate-300 bg-white'
+              }`}
+            >
+              {form.documentTemplate === 'pro' && (
+                <span className="absolute top-2 right-2 h-4 w-4 bg-blue-600 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="h-3 w-3 text-white" />
+                </span>
+              )}
+              {/* Mini preview pro */}
+              <div className="w-full h-20 bg-white border border-slate-200 rounded-lg overflow-hidden mb-2">
+                <div className="flex items-center gap-1 p-1.5 border-b-2 border-slate-200">
+                  <div className="h-5 w-5 bg-blue-900 rounded" />
+                  <div className="flex-1 space-y-0.5">
+                    <div className="h-1.5 bg-slate-800 rounded w-14" />
+                    <div className="h-1 bg-blue-400 rounded w-8" />
+                  </div>
+                  <div className="h-4 w-10 bg-blue-900 rounded text-[5px] flex items-center justify-center text-white font-bold">OS</div>
+                </div>
+                <div className="h-4 bg-blue-900 flex items-center px-1.5 gap-1">
+                  <div className="h-1 bg-blue-300 rounded w-4" />
+                  <div className="flex-1 h-1 bg-blue-300 rounded" />
+                  <div className="h-1 bg-blue-300 rounded w-6" />
+                </div>
+                <div className="p-1 space-y-0.5">
+                  <div className="flex gap-1"><div className="h-1 bg-blue-200 rounded w-2"/><div className="h-1 bg-slate-200 rounded flex-1"/></div>
+                  <div className="flex gap-1"><div className="h-1 bg-blue-100 rounded w-2"/><div className="h-1 bg-slate-100 rounded flex-1"/></div>
+                </div>
+              </div>
+              <p className="text-xs font-bold text-slate-800">Pro <span className="text-blue-600">✦</span></p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Azul corporativo com rodapé e tabela numerada</p>
+            </button>
           </div>
         </div>
 

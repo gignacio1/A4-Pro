@@ -29,7 +29,8 @@ export const GetCompanySettingsResponse = zod.object({
   "logoText": zod.string().nullish(),
   "logoUrl": zod.string().nullish(),
   "signature": zod.string().nullish(),
-  "useSignature": zod.boolean()
+  "useSignature": zod.boolean(),
+  "documentTemplate": zod.string().nullish()
 })
 
 
@@ -46,7 +47,8 @@ export const UpdateCompanySettingsBody = zod.object({
   "logoText": zod.string().nullish(),
   "logoUrl": zod.string().nullish(),
   "signature": zod.string().nullish(),
-  "useSignature": zod.boolean()
+  "useSignature": zod.boolean(),
+  "documentTemplate": zod.string().nullish()
 })
 
 export const UpdateCompanySettingsResponse = zod.object({
@@ -59,7 +61,8 @@ export const UpdateCompanySettingsResponse = zod.object({
   "logoText": zod.string().nullish(),
   "logoUrl": zod.string().nullish(),
   "signature": zod.string().nullish(),
-  "useSignature": zod.boolean()
+  "useSignature": zod.boolean(),
+  "documentTemplate": zod.string().nullish()
 })
 
 

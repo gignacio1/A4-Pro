@@ -14,6 +14,7 @@ export const companySettingsTable = pgTable("company_settings", {
   logoUrl: text("logo_url"),
   signature: text("signature"),
   useSignature: boolean("use_signature").notNull().default(false),
+  documentTemplate: text("document_template").default("classic"),
 });
 
 export const insertCompanySettingsSchema = createInsertSchema(companySettingsTable).omit({ id: true });
